@@ -14,6 +14,18 @@ export class App extends Component {
     ],
     filter: '',
   };
+  // використовую localStorage
+  componentDidMount() {
+    const saved = localStorage.getItem('contacts');
+    if (saved) {
+      this.setState({ contacts: JSON.parse(saved) });
+    }
+  }
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+    }
+  }
 
   addContact = (name, number) => {
     const { contacts } = this.state;
@@ -45,29 +57,6 @@ export class App extends Component {
     }));
   };
 
-  // // оновлення name при введенні
-
-  // handleChange = event => {
-  //   const { name, value } = event.target;
-  //   this.setState({ [name]: value });
-  // };
-  // // новий контакт
-  // handleSubmit = event => {
-  //   event.preventDefault();
-  //   const { name, number, contacts } = this.state;
-  //   // пропуск пустих імен:
-  //   if (name.trim() === '') return;
-  //   const newContact = {
-  //     id: nanoid(),
-  //     name: name.trim(),
-  //     number: number.trim(),
-  //   };
-  //   this.setState({
-  //     contacts: [...contacts, newContact],
-  //     name: '',
-  //     number: '',//очистимо інпут
-  //   });
-  // };
   // оновлення фільтру
   handleFilterChange = event => {
     this.setState({
@@ -87,13 +76,11 @@ export class App extends Component {
     const { filter } = this.state;
     const filteredContacts = this.getFilterContacts();
     return (
-      <div> 
+      <div>
         <h1>Phonebook</h1>
-        <ContactForm
-          onAddContact={this.addContact} />
+        <ContactForm onAddContact={this.addContact} />
         <h2>Contacts</h2>
-        <Filter value={filter}
-          onChange={this.handleFilterChange} />
+        <Filter value={filter} onChange={this.handleFilterChange} />
         <ContactList
           contacts={filteredContacts}
           onDeleteContact={this.deleteContact}
